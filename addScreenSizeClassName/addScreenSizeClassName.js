@@ -1,5 +1,10 @@
 /**
- * Function
+ * Add screen-size code, e.g. lg, md, sm, and sx, 
+ * based on window.innerWidth, to the specified element.
+ *
+ * Default target elements are <html> and <body>
+ * Default breakpoint (min-width) are:
+ *  { lg: 1200, md: 1024, sm: 768, xs: 0 }
  */
 var addScreenSizeClassName = {
     /**
