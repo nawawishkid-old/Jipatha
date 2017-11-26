@@ -1,3 +1,6 @@
+/**
+ * Function
+ */
 var addScreenSizeClassName = {
     /**
      * Properties
@@ -73,3 +76,8 @@ var addScreenSizeClassName = {
     getCodeArray: function() { return Object.keys(this.breakPoint); },
     getBreakpointArray: function() { return Object.values(this.breakPoint); }
 }
+
+/**
+ * Execution
+ */
+//addScreenSizeClassName.init();
