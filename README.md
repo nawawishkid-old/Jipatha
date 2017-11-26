@@ -9,3 +9,4 @@
 
 ## [PHP](php)
 ### 1. [scriptsBlender](php/scriptsBlender)
+> Put specified scripts altogether.
