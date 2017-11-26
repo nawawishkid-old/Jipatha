@@ -19,3 +19,6 @@ addScreenSizeClassName.init({
     target: 'html, body, header'
 });
 ```
+
+**See [jsfiddle](https://jsfiddle.net/Nawawish/s9c81mzL/).**     
+**note:** Open browser's inspector and look at the `<html>` and `<body>` of the output section of the editor, not the web, to see what happens.
