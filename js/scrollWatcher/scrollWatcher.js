@@ -87,7 +87,7 @@ function scrollWatcher( Options ) {
 
 // Example usage
 /*
-scrollFire({
+scrollWatcher({
 	target: document.getElementById('a'),
 	scenes: [
 		{
