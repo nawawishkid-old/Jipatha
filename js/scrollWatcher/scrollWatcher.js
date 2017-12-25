@@ -12,59 +12,70 @@ function scrollWatcher( Options ) {
     let pageOffset = pageYOffset;
     let prevOffset;
     let DefaultOpts = {
-        target: null
+        target: null,
+		action: function() { return; },
+		reset: function() { return; }
     };
     let DefaultSceneOpts = {
-		action: function() { return; },
-		reset: function() { return; },
 		offset: 100
     };
   
     // Executions
     setDefaultOptions(Options, DefaultOpts);
     DefaultSceneOpts.target = Options.target;
+    DefaultSceneOpts.action = Options.action;
+    DefaultSceneOpts.reset = Options.reset;
     manageDefaultSceneOptions(Options.scenes);
+    stillHandler();
 	document.addEventListener('scroll', scrollHandler);
   
     // Functions
-    function scrollHandler() {
-        //console.log('RUNNING!');
-		if ( isNextSceneReached() ) {
-            console.log('scene ' + index + ' action!');
-            console.log('scene offset = ' + nextScene.offset);
-			nextScene.action(nextScene.target);
-			prevScene = nextScene;
-			if ( index + 1 === Options.scenes.length ) {
-                nextScene = null;
-				return;
-			}
-			index++;
-            nextScene = Options.scenes[index];
-            once = true;
-		} else if ( isPrevSceneReached() ) {
-            console.log('scene ' + index + ' reset!');
-            console.log('scene offset = ' + prevScene.offset);
-			prevScene.reset(prevScene.target);
-			nextScene = prevScene;
-            if ( index === 0 ) {
-                prevScene = null;
-                return;
-            }
-			index--;
-            prevScene = Options.scenes[index];
+    /**
+     * stillHandler
+     *
+     * Loop through all scenes to check if
+     * pageYOffset at the beginning of the function
+     * is greater than the scene's offset.
+     * If so, run scene's action without waiting for scrolling.
+     * Use at the beginning of the (scrollWatcher) function.
+     */
+    function stillHandler() {       
+        Options.scenes.forEach(function(scene) {
+        	if ( pageYOffset > scene.offset) {
+        		scene.action(scene.target);
+        	}
+        });
+    }
+
+    /**
+     * scrollHandler
+     *
+     * Check if currently scrolling pageYOffset
+     * is greater than the nextScene's offset.
+     * If so, run the action.
+     * Use when user's is scrolling the page.
+     */
+    function scrollHandler() {       
+		if ( isNextSceneReached(true) ) {
+            runNextScene();
+		} else if ( isPrevSceneReached(true) ) {
+            runPrevScene();
 		}
     }
   
-    function isNextSceneReached() {
+    function isNextSceneReached( scrolling = false ) {
     	if ( nextScene === null ) { return false; }
-      	return pageYOffset >= nextScene.offset && isScrollDown();
+    	let isScrollDownValue = scrolling ? isScrollDown() : true;
+      	return pageYOffset >= nextScene.offset && isScrollDownValue;
     }
 
-    function isPrevSceneReached() {
+    function isPrevSceneReached( scrolling = false ) {
     	if ( prevScene === null ) { return false; }
-    	return pageYOffset <= prevScene.offset && !isScrollDown();
+    	let isScrollDownValue = scrolling ? isScrollDown() : false;
+    	return pageYOffset <= prevScene.offset && !isScrollDownValue;
     }
   
+  	// Check if user is scrolling down or not.
     function isScrollDown() {
 		prevOffset = pageOffset;
 		pageOffset = pageYOffset;
@@ -83,49 +94,27 @@ function scrollWatcher( Options ) {
             Opts[p[i]] = DefOpts[p[i]];
         }
     }
-}
 
-// Example usage
-/*
-scrollWatcher({
-	target: document.getElementById('a'),
-	scenes: [
-		{
-			offset: 100,
-			action: function(target) {
-				colorize(target, 'pink');
-			},
-			reset: function(target) {
-				colorize(target, 'red');
-			}
-		},
-		{
-			offset: 400,
-			action: function(target) {
-				colorize(target, 'blue');
-			},
-			reset: function(target) {
-				colorize(target, 'pink');
-			}
-		},
-		{
-		    offset: 700,
-		    action: function(target) {
-				target.style.transition = 'opacity .5s';
-				target.style.opacity = '0';
-		    },
-		    reset: function(target) {
-		        target.style.opacity = '1';
-		    }
+    function runNextScene() {           
+		nextScene.action(nextScene.target);
+		prevScene = nextScene;
+		if ( index + 1 === Options.scenes.length ) {
+            nextScene = null;
+			return;
 		}
-	]
-});
-  
-function fader( element, opacity ) {
-	element.style.opacity = opacity;
-}
+		index++;
+        nextScene = Options.scenes[index];
+        once = true;
+    }
 
-function colorize( element, color ) {
-	element.style.background = color;
+    function runPrevScene() {           
+		prevScene.reset(prevScene.target);
+		nextScene = prevScene;
+        if ( index === 0 ) {
+            prevScene = null;
+            return;
+        }
+		index--;
+        prevScene = Options.scenes[index];
+    }
 }
-*/
